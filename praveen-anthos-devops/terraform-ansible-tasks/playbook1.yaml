@@ -1,0 +1,70 @@
+---
+  - name: install apache2 and php
+    hosts: all
+    gather_facts: true
+    become: yes
+    become_method: sudo
+    tasks:
+# installing apache2 server on vm
+    - name: install apache2
+      package:
+        name: apache2
+        state: latest
+# installing Php serevr on vm
+    - name: install php
+      package:
+        name: php
+        state: latest
+
+# starting the services of apache2
+    - name: start service of apache2
+      service: 
+        name: apache2
+        state: started
+
+# installing the git on vm
+    - name: install git 
+      package:
+        name: git
+        state: latest
+
+# transferring the jenkins script on remote vm
+    - name: Transfer executable script jenkins
+      copy: src=jenkins.sh dest=/tmp/jenkins.sh mode=0777
+
+# executig the jenkins script
+    - name: Execute the script jenkins
+      command: /bin/bash /tmp/jenkins.sh
+
+#transferring the mysql.sh script on remote vm
+    - name: Transfer executable script mysql
+      copy: src=mysql.sh dest=/tmp/mysql.sh mode=0777
+      
+# executing the mysql.sh script on remote vm
+    - name: Execute the script mysql
+      command: /bin/bash /tmp/mysql.sh   
+
+# Transferring the mongodb.sh script on remote vm 
+    - name: Transfer executable script mongodb
+      copy: src=mongodb.sh dest=/tmp/mongodb.sh mode=0777
+
+# executing the mongodb.sh script on remote vm      
+    - name: Execute the script mongodb
+      command: /bin/bash /tmp/mongodb.sh   
+
+# installing helm charts on vm 
+    - name: Install helm charts
+      shell: |
+        sudo apt-get update -y
+        wget -O helm.tar.gz https://get.helm.sh/helm-v3.5.4-linux-amd64.tar.gz
+        tar -zxvf helm.tar.gz
+        sudo mv /home/niteshsharma12012/linux-amd64/helm /usr/local/bin/helm
+        helm version
+
+# installing the argocd on vm
+    - name: install argocd
+      shell: |
+        sudo apt-get update -y
+        wget https://github.com/argoproj/argo-cd/releases/download/v2.2.5/argocd-linux-amd64 -O argocd
+        sudo chmod +x argocd
+        sudo mv /home/niteshsharma12012/argocd /usr/local/bin
